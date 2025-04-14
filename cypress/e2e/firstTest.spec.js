@@ -143,7 +143,7 @@ describe('First test suite', () => {
         cy.get('[type="checkbox"]').check({force: true})
     })
 
-    it.only('date picker', () => {
+    it('date picker', () => {
 
         cy.visit('/')
         cy.contains('Forms').click()
@@ -180,10 +180,46 @@ describe('First test suite', () => {
             cy.wrap(input).invoke('prop', 'value').should('contain', dateToAssert)
             cy.wrap(input).should('have.value', dateToAssert)
         })
-
-
     })
 
+    it('Lists and dropdowns', () => {
+
+        cy.visit('/')
+
+        //1
+        cy.get('nav nb-select').click()
+        cy.get('.options-list').contains('Dark').click()
+        cy.get('nav nb-select').should('contain', 'Dark')
+
+        //2
+        cy.get('nav nb-select').then(dropDown => {
+            cy.wrap(dropDown).click()
+            cy.get('.options-list nb-option').each( (listItem, index) => {
+                const itemText = listItem.text().trim()
+                cy.wrap(listItem).click()
+                cy.wrap(dropDown).should('contain', itemText)
+               if(index < 3) {
+                   cy.wrap(dropDown).click()
+               }
+            })
+        })
+    })
+
+    it('Wet tables', () => {
+
+        cy.visit('/')
+        cy.contains('Tables & Data').click()
+        cy.contains('Smart Table').click()
+
+        //1 Get the row by text
+        cy.get('tbody').contains('tr', 'Larry').then( tableRow => {
+            cy.wrap(tableRow).find('nb-edit').click()
+            cy.wrap(tableRow).find('[placeholder="Age"]').clear().type('35')
+            cy.wrap(tableRow).find('.nb-checkmark').click()
+            cy.wrap(tableRow).find('td').eq(6).should('contain', '35')
+        })
+
+    })
 
 })
 
